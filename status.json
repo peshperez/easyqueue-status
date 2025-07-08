@@ -1,6 +1,7 @@
 {
-  "Q100": { "status": "called", "position": 0 },
-  "Q101": { "status": "waiting", "position": 1 },
-  "Q102": { "status": "waiting", "position": 2 },
-  "Q103": { "status": "waiting", "position": 3 }
+  "Q101": "Now Serving",
+  "Q102": "You're 2nd in line",
+  "Q103": "You're 3rd in line",
+  "Q104": "Please wait",
+  "Q105": "Served"
 }
