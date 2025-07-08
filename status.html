@@ -46,36 +46,46 @@
     </div> 
   </div>
   
-  <script>
-    // Read ticket from ?ticket=Q101
-    const urlParams = new URLSearchParams(window.location.search);
-    const ticketNumber = urlParams.get("ticket");
+<script>
+  const urlParams = new URLSearchParams(window.location.search);
+  const ticketNumber = urlParams.get("ticket");
+  const container = document.getElementById("ticketInfo");
 
-    // Show loading or error
-    const container = document.getElementById("ticketInfo");
+  if (!ticketNumber) {
+    container.innerHTML = `<div class="text-danger">⚠️ No ticket number found in the URL.</div>`;
+  } else {
+    fetch("status.json")
+      .then(res => res.json())
+      .then(data => {
+        let foundStatus = null;
 
-    if (!ticketNumber) {
-      container.innerHTML = `<div class="text-danger">⚠️ No ticket number found in the URL.</div>`;
-    } else {
-      fetch("status.json")
-        .then(res => res.json())
-        .then(data => {
-          const status = data[ticketNumber];
-          if (status) {
-            container.innerHTML = `
-              <div class="ticket-number">${ticketNumber}</div>
-              <div class="badge bg-${status == 'Now Serving' ? 'success' : 'warning'} text-light badge-status mt-3">
-                ${status}
-              </div>
-            `;
-          } else {
-            container.innerHTML = `<div class="text-danger">❌ Ticket <strong>${ticketNumber}</strong> not found.</div>`;
+        for (const dept in data) {
+          if (data[dept][ticketNumber]) {
+            foundStatus = data[dept][ticketNumber];
+            break;
           }
-        })
-        .catch(err => {
-          container.innerHTML = `<div class="text-danger">Error loading status.</div>`;
-        });
-    }
-  </script>
+        }
+
+        if (foundStatus) {
+          const statusLabel = foundStatus === "serve" ? "success" :
+                              foundStatus === "Served" ? "secondary" :
+                              "warning";
+
+          container.innerHTML = `
+            <div class="ticket-number">${ticketNumber}</div>
+            <div class="badge bg-${statusLabel} text-light badge-status mt-3">
+              ${foundStatus}
+            </div>
+          `;
+        } else {
+          container.innerHTML = `<div class="text-danger">❌ Ticket <strong>${ticketNumber}</strong> not found.</div>`;
+        }
+      })
+      .catch(err => {
+        container.innerHTML = `<div class="text-danger">Error loading status.</div>`;
+      });
+  }
+</script>
+
 </body>
 </html>
