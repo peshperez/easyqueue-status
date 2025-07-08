@@ -1,42 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Ticket Status</title>
-  <link rel="stylesheet" href="assets/style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Queue Status</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      padding-top: 60px;
+    }
+    .card {
+      max-width: 500px;
+      margin: auto;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.1);
+      border-radius: 15px;
+    }
+    .badge-status {
+      font-size: 1.2rem;
+    }
+    .ticket-number {
+      font-size: 2.5rem;
+      font-weight: bold;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-    <h2>Ticket Status</h2>
-    <div id="result">Loading...</div>
+    <div class="card text-center p-4">
+      <h2 class="mb-3">🧾 Queue Status</h2>
+      <div id="ticketInfo">
+        <div class="text-muted">Loading ticket...</div>
+      </div>
+    </div>
   </div>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const ticketNo = params.get('ticket')?.toUpperCase();
+    // Read ticket from ?ticket=Q101
+    const urlParams = new URLSearchParams(window.location.search);
+    const ticketNumber = urlParams.get("ticket");
 
-    if (!ticketNo) {
-      document.getElementById("result").innerHTML = "Invalid or missing ticket number.";
+    // Show loading or error
+    const container = document.getElementById("ticketInfo");
+
+    if (!ticketNumber) {
+      container.innerHTML = `<div class="text-danger">⚠️ No ticket number found in the URL.</div>`;
     } else {
-      fetch('status.json')
+      fetch("status.json")
         .then(res => res.json())
         .then(data => {
-          const ticket = data[ticketNo];
-          if (ticket) {
-            const statusText = `
-              <p><strong>Ticket:</strong> ${ticketNo}</p>
-              <p><strong>Status:</strong> ${ticket.status.toUpperCase()}</p>
-              <p><strong>Your Position:</strong> ${ticket.position === 0 ? "Now Serving" : ticket.position}</p>
+          const status = data[ticketNumber];
+          if (status) {
+            container.innerHTML = `
+              <div class="ticket-number">${ticketNumber}</div>
+              <div class="badge bg-${status == 'Now Serving' ? 'success' : 'warning'} text-dark badge-status mt-3">
+                ${status}
+              </div>
             `;
-            document.getElementById("result").innerHTML = statusText;
           } else {
-            document.getElementById("result").innerHTML = "Ticket not found.";
+            container.innerHTML = `<div class="text-danger">❌ Ticket <strong>${ticketNumber}</strong> not found.</div>`;
           }
         })
         .catch(err => {
-          console.error(err);
-          document.getElementById("result").innerHTML = "Error loading status.";
+          container.innerHTML = `<div class="text-danger">Error loading status.</div>`;
         });
     }
   </script>
