@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Ticket Status</title>
+  <link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Ticket Status</h2>
+    <div id="result">Loading...</div>
+  </div>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const ticketNo = params.get('ticket')?.toUpperCase();
+
+    if (!ticketNo) {
+      document.getElementById("result").innerHTML = "Invalid or missing ticket number.";
+    } else {
+      fetch('status.json')
+        .then(res => res.json())
+        .then(data => {
+          const ticket = data[ticketNo];
+          if (ticket) {
+            const statusText = `
+              <p><strong>Ticket:</strong> ${ticketNo}</p>
+              <p><strong>Status:</strong> ${ticket.status.toUpperCase()}</p>
+              <p><strong>Your Position:</strong> ${ticket.position === 0 ? "Now Serving" : ticket.position}</p>
+            `;
+            document.getElementById("result").innerHTML = statusText;
+          } else {
+            document.getElementById("result").innerHTML = "Ticket not found.";
+          }
+        })
+        .catch(err => {
+          console.error(err);
+          document.getElementById("result").innerHTML = "Error loading status.";
+        });
+    }
+  </script>
+</body>
+</html>
