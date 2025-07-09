@@ -30,11 +30,13 @@
             "CSH0021": "You're 6th in line",
             "CSH0022": "You're 7th in line",
             "CSH-P0006": "You're 8th in line",
-            "CSH0023": "You're 9th in line"
+            "CSH0023": "You're 9th in line",
+            "CSH-P0007": "You're 10th in line"
         },
         "1001": {
             "HMO-SC0001": "You're next in line",
-            "HMO-SC0002": "You're 2nd in line"
+            "HMO-SC0002": "You're 2nd in line",
+            "HMO-P0001": "You're 3rd in line"
         }
     }
 }
