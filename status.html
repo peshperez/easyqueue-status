@@ -90,7 +90,7 @@ if (!ticketNumber) {
           <div class="badge bg-${statusLabel} text-light badge-status mt-3">
             ${foundStatus}
           </div>
-          <div class="text-muted small mt-2">📅 Status as of <strong>${targetDate}</strong></div>
+          <div class="text-muted small mt-2"><strong>${targetDate}</strong></div>
         `;
       } else {
         container.innerHTML = `<div class="text-danger">❌ Ticket <strong>${ticketNumber}</strong> not found for <strong>${targetDate}</strong>.</div>`;
