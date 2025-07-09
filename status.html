@@ -49,10 +49,12 @@
 <script>
 const urlParams = new URLSearchParams(window.location.search);
 const ticketNumber = urlParams.get("ticket");
+const requestedDate = urlParams.get("date"); // Optional date parameter
 const container = document.getElementById("ticketInfo");
 
-// Get today's date in YYYY-MM-DD format
+// Use the date from URL if present, otherwise use today's date
 const today = new Date().toISOString().split("T")[0];
+const targetDate = requestedDate || today;
 
 if (!ticketNumber) {
   container.innerHTML = `<div class="text-danger">⚠️ No ticket number found in the URL.</div>`;
@@ -60,9 +62,8 @@ if (!ticketNumber) {
   fetch("status.json")
     .then(res => res.json())
     .then(data => {
-      // Check if the status.json date matches today's date
-      if (data.date !== today) {
-        container.innerHTML = `<div class="text-warning">⏳ Ticket status is not available for today (${today}).</div>`;
+      if (!data.date || data.date !== targetDate) {
+        container.innerHTML = `<div class="text-warning">📅 No status found for ticket <strong>${ticketNumber}</strong> on <strong>${targetDate}</strong>.</div>`;
         return;
       }
 
@@ -78,7 +79,7 @@ if (!ticketNumber) {
       }
 
       if (foundStatus) {
-        const statusLabel = foundStatus.includes("Serving") ? "success" :
+        const statusLabel = foundStatus.includes("Now Serving") ? "success" :
                             foundStatus.includes("Finished") ? "secondary" :
                             foundStatus.includes("Missed") ? "danger" :
                             foundStatus.includes("Hold") ? "warning" :
@@ -89,9 +90,10 @@ if (!ticketNumber) {
           <div class="badge bg-${statusLabel} text-light badge-status mt-3">
             ${foundStatus}
           </div>
+          <div class="text-muted small mt-2">📅 Status as of <strong>${targetDate}</strong></div>
         `;
       } else {
-        container.innerHTML = `<div class="text-danger">❌ Ticket <strong>${ticketNumber}</strong> not found for today.</div>`;
+        container.innerHTML = `<div class="text-danger">❌ Ticket <strong>${ticketNumber}</strong> not found for <strong>${targetDate}</strong>.</div>`;
       }
     })
     .catch(err => {
