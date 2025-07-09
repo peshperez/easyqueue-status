@@ -47,44 +47,59 @@
   </div>
   
 <script>
-  const urlParams = new URLSearchParams(window.location.search);
-  const ticketNumber = urlParams.get("ticket");
-  const container = document.getElementById("ticketInfo");
+const urlParams = new URLSearchParams(window.location.search);
+const ticketNumber = urlParams.get("ticket");
+const container = document.getElementById("ticketInfo");
 
-  if (!ticketNumber) {
-    container.innerHTML = `<div class="text-danger">⚠️ No ticket number found in the URL.</div>`;
-  } else {
-    fetch("status.json")
-      .then(res => res.json())
-      .then(data => {
-        let foundStatus = null;
+// Get today's date in YYYY-MM-DD format
+const today = new Date().toISOString().split("T")[0];
 
-        for (const dept in data) {
-          if (data[dept][ticketNumber]) {
-            foundStatus = data[dept][ticketNumber];
-            break;
-          }
+if (!ticketNumber) {
+  container.innerHTML = `<div class="text-danger">⚠️ No ticket number found in the URL.</div>`;
+} else {
+  fetch("status.json")
+    .then(res => res.json())
+    .then(data => {
+      // Check if the status.json date matches today's date
+      if (data.date !== today) {
+        container.innerHTML = `<div class="text-warning">⏳ Ticket status is not available for today (${today}).</div>`;
+        return;
+      }
+
+      const departments = data.departments;
+      let foundStatus = null;
+
+      for (const deptId in departments) {
+        const queueList = departments[deptId];
+        if (queueList[ticketNumber]) {
+          foundStatus = queueList[ticketNumber];
+          break;
         }
+      }
 
-        if (foundStatus) {
-          const statusLabel = foundStatus === "serve" ? "success" :
-                              foundStatus === "Served" ? "secondary" :
-                              "warning";
+      if (foundStatus) {
+        const statusLabel = foundStatus.includes("Serving") ? "success" :
+                            foundStatus.includes("Finished") ? "secondary" :
+                            foundStatus.includes("Missed") ? "danger" :
+                            foundStatus.includes("Hold") ? "warning" :
+                            "info";
 
-          container.innerHTML = `
-            <div class="ticket-number">${ticketNumber}</div>
-            <div class="badge bg-${statusLabel} text-light badge-status mt-3">
-              ${foundStatus}
-            </div>
-          `;
-        } else {
-          container.innerHTML = `<div class="text-danger">❌ Ticket <strong>${ticketNumber}</strong> not found.</div>`;
-        }
-      })
-      .catch(err => {
-        container.innerHTML = `<div class="text-danger">Error loading status.</div>`;
-      });
-  }
+        container.innerHTML = `
+          <div class="ticket-number fw-bold fs-4">${ticketNumber}</div>
+          <div class="badge bg-${statusLabel} text-light badge-status mt-3">
+            ${foundStatus}
+          </div>
+        `;
+      } else {
+        container.innerHTML = `<div class="text-danger">❌ Ticket <strong>${ticketNumber}</strong> not found for today.</div>`;
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      container.innerHTML = `<div class="text-danger">⚠️ Error loading ticket status.</div>`;
+    });
+}
+
 </script>
 
 </body>
