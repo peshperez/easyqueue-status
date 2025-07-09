@@ -31,12 +31,20 @@
             "CSH0022": "You're 7th in line",
             "CSH-P0006": "You're 8th in line",
             "CSH0023": "You're 9th in line",
-            "CSH-P0007": "You're 10th in line"
+            "CSH-P0007": "You're 10th in line",
+            "CSH0024": "You're 11th in line",
+            "CSH0025": "You're 12th in line",
+            "CSH-P0008": "You're 13th in line",
+            "CSH0026": "You're 14th in line",
+            "CSH0027": "You're 15th in line",
+            "CSH-P0009": "You're 16th in line",
+            "CSH0028": "You're 17th in line"
         },
         "1001": {
             "HMO-SC0001": "You're next in line",
             "HMO-SC0002": "You're 2nd in line",
-            "HMO-P0001": "You're 3rd in line"
+            "HMO-P0001": "You're 3rd in line",
+            "HMO-C0001": "You're 4th in line"
         }
     }
 }
